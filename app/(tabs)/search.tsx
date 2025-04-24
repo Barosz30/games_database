@@ -4,14 +4,16 @@ import {
   TextInput,
   ActivityIndicator,
   FlatList,
+  ScrollView,
 } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import useIGDB from "../hooks/useIGDB";
 import useFetch from "../hooks/useFetch";
+import SearchBar from "@/components/SearchBar";
 
 const Search = () => {
   const { fetchGames } = useIGDB();
-  const [query, setQuery] = useState("zelda");
+  const [query, setQuery] = useState("");
   const [searchTrigger, setSearchTrigger] = useState(0);
 
   const fetchFunction = useCallback(() => {
@@ -31,36 +33,21 @@ const Search = () => {
   }, [searchTrigger]);
 
   return (
-    <View style={{ padding: 16 }}>
-      <TextInput
-        placeholder="Search for a game"
-        value={query}
-        onChangeText={setQuery}
-        onSubmitEditing={() => setSearchTrigger((n) => n + 1)}
-        style={{
-          borderWidth: 1,
-          borderColor: "#ccc",
-          padding: 8,
-          borderRadius: 6,
-          marginBottom: 16,
-        }}
-      />
-
-      {loading && <ActivityIndicator size="small" />}
-      {error && <Text style={{ color: "red" }}>{error.message}</Text>}
-
-      <FlatList
-        data={data}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={{ marginBottom: 12 }}>
-            <Text style={{ fontWeight: "bold" }}>{item.name}</Text>
-            <Text numberOfLines={2} style={{ color: "#666" }}>
-              {item.summary}
-            </Text>
-          </View>
-        )}
-      />
+    <View className="flex-1 bg-primary">
+      <ScrollView className="flex-1 px-5">
+        <FlatList
+          data={data}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <View style={{ marginBottom: 12 }}>
+              <Text style={{ fontWeight: "bold" }}>{item.name}</Text>
+              <Text numberOfLines={2} style={{ color: "#666" }}>
+                {item.summary}
+              </Text>
+            </View>
+          )}
+        />
+      </ScrollView>
     </View>
   );
 };

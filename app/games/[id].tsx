@@ -9,4 +9,8 @@ const GameDetails = () => {
   );
 };
 
+export const options = {
+  headerShown: false,
+};
+
 export default GameDetails;

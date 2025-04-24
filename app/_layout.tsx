@@ -7,7 +7,7 @@ export default function RootLayout() {
     <TokenProvider>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="games" options={{ headerShown: false }} />
+        {/* <Stack.Screen name="games" options={{ headerShown: false }} /> */}
       </Stack>
     </TokenProvider>
   );
