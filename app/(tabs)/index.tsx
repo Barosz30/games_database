@@ -23,7 +23,7 @@ export default function Index() {
 
   const now = Math.floor(Date.now() / 1000);
   const query = `
-    fields name, first_release_date, summary, cover.url, total_rating;
+    fields name, first_release_date, cover.url, total_rating;
     where first_release_date != null & first_release_date <= ${now};
     sort first_release_date desc;
     limit 20;
@@ -42,7 +42,11 @@ export default function Index() {
 
   return (
     <View className="flex-1 bg-primary">
-      <Image source={images.bg} className="absolute w-full z-0" />
+      <Image
+        source={images.bg}
+        className="absolute w-full z-0"
+        resizeMode="cover"
+      />
       <ScrollView
         className="flex-1 px-5"
         showsVerticalScrollIndicator={false}
