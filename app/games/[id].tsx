@@ -223,29 +223,6 @@ export function GameDetails() {
                 >
                   {game.screenshots.map(
                     (shot: { url: string }, index: number) => (
-                      // <Pressable
-                      //   key={index}
-                      //   onPress={() =>
-                      //     setSelectedImage(
-                      //       `https:${shot.url.replace(
-                      //         "t_thumb",
-                      //         "t_screenshot_big"
-                      //       )}`
-                      //     )
-                      //   }
-                      //   className="mr-4"
-                      // >
-                      //   <Image
-                      //     source={{
-                      //       uri: `https:${shot.url.replace(
-                      //         "t_thumb",
-                      //         "t_screenshot_big"
-                      //       )}`,
-                      //     }}
-                      //     className="w-60 h-36 rounded-lg"
-                      //     resizeMode="cover"
-                      //   />
-                      // </Pressable>
                       <Pressable
                         key={index}
                         onPress={() => setSelectedImageIndex(index)}
@@ -262,6 +239,36 @@ export function GameDetails() {
                           resizeMode="cover"
                         />
                       </Pressable>
+                    )
+                  )}
+                </ScrollView>
+              </View>
+            )}
+            {game.videos && game.videos.length > 0 && (
+              <View className="mt-8 min-h-48">
+                <Text className="text-white font-bold mb-2">🎬 Trailers</Text>
+
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  className="flex-row"
+                >
+                  {game.videos.map(
+                    (video: { video_id: string }, index: number) => (
+                      <View
+                        key={index}
+                        className="w-72 h-40 rounded-lg overflow-hidden mr-4 bg-black"
+                      >
+                        <WebView
+                          source={{
+                            uri: `https://www.youtube.com/embed/${video.video_id}`,
+                          }}
+                          allowsFullscreenVideo
+                          javaScriptEnabled
+                          domStorageEnabled
+                          style={{ flex: 1 }}
+                        />
+                      </View>
                     )
                   )}
                 </ScrollView>
