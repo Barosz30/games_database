@@ -5,11 +5,18 @@ import {
   ScrollView,
   ActivityIndicator,
   TouchableOpacity,
+  StatusBar,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import useFetch from "@/app/hooks/useFetch";
 import useGameDetails from "@/app/hooks/useGameDetails";
 import { icons } from "@/constants/icons";
+import useFavorites from "../context/favoritesContext";
+import { AntDesign } from "@expo/vector-icons";
+import { WebView } from "react-native-webview";
+import { useState } from "react";
+import { Pressable } from "react-native";
+import ImageViewing from "react-native-image-viewing";
 
 interface GameInfoProps {
   label: string;
@@ -29,6 +36,12 @@ export function GameDetails() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
 
+  const { addFavorite, removeFavorite, isFavorite } = useFavorites();
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
+    null
+  );
+  const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+
   const numericId =
     typeof id === "string"
       ? parseInt(id, 10)
@@ -39,6 +52,14 @@ export function GameDetails() {
   if (!numericId) {
     return <Text>Invalid ID</Text>;
   }
+
+  const toggleFavorite = () => {
+    if (isFavorite(numericId)) {
+      removeFavorite(numericId);
+    } else {
+      addFavorite(numericId);
+    }
+  };
 
   const { fetchDetails } = useGameDetails(numericId);
 
@@ -58,8 +79,14 @@ export function GameDetails() {
 
   return (
     <View className="bg-primary flex-1">
-      <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
-        <View>
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{
+          paddingBottom: 120,
+          flexGrow: 1,
+        }}
+      >
+        <View className="flex-1 flex-col">
           {game.cover?.url && (
             <Image
               source={{
@@ -72,6 +99,16 @@ export function GameDetails() {
               resizeMode="stretch"
             />
           )}
+          <TouchableOpacity
+            onPress={toggleFavorite}
+            className="absolute top-10 right-5 bg-black/50 p-2 rounded-full z-10"
+          >
+            <AntDesign
+              name={isFavorite(numericId) ? "heart" : "hearto"}
+              size={24}
+              color={isFavorite(numericId) ? "#FF4C4C" : "#FF7F9F"}
+            />
+          </TouchableOpacity>
         </View>
         <View className="flex-col items-start justify-center mt-5 px-5">
           <Text className="text-white font-bold text-xl">{game?.name}</Text>
@@ -176,12 +213,67 @@ export function GameDetails() {
                 )}
               </View>
             )}
+            {game.screenshots && game.screenshots.length > 0 && (
+              <View className="mt-8 min-h-40">
+                <Text className="text-white font-bold mb-2">Screenshots</Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  className="flex-row flex-1"
+                >
+                  {game.screenshots.map(
+                    (shot: { url: string }, index: number) => (
+                      // <Pressable
+                      //   key={index}
+                      //   onPress={() =>
+                      //     setSelectedImage(
+                      //       `https:${shot.url.replace(
+                      //         "t_thumb",
+                      //         "t_screenshot_big"
+                      //       )}`
+                      //     )
+                      //   }
+                      //   className="mr-4"
+                      // >
+                      //   <Image
+                      //     source={{
+                      //       uri: `https:${shot.url.replace(
+                      //         "t_thumb",
+                      //         "t_screenshot_big"
+                      //       )}`,
+                      //     }}
+                      //     className="w-60 h-36 rounded-lg"
+                      //     resizeMode="cover"
+                      //   />
+                      // </Pressable>
+                      <Pressable
+                        key={index}
+                        onPress={() => setSelectedImageIndex(index)}
+                        className="mr-4"
+                      >
+                        <Image
+                          source={{
+                            uri: `https:${shot.url.replace(
+                              "t_thumb",
+                              "t_screenshot_big"
+                            )}`,
+                          }}
+                          className="w-60 h-36 rounded-lg"
+                          resizeMode="cover"
+                        />
+                      </Pressable>
+                    )
+                  )}
+                </ScrollView>
+              </View>
+            )}
           </View>
         </View>
       </ScrollView>
+
       <TouchableOpacity
         onPress={router.back}
-        className="absolute bottom-14 left-0 right-0 mx-5 bg-accent rounderd-lg py-3.5 flex flex-row items-center justify-center z-50"
+        className="absolute bottom-14 left-0 right-0 mx-5 bg-accent rounded-lg py-3.5 flex flex-row items-center justify-center z-50"
       >
         <Image
           source={icons.arrow}
@@ -190,6 +282,19 @@ export function GameDetails() {
         />
         <Text className="text-white font-semibold text-base">Go back</Text>
       </TouchableOpacity>
+      {game.screenshots && selectedImageIndex !== null && (
+        <View className="absolute inset-0 bg-black z-50">
+          <ImageViewing
+            images={game.screenshots.map((shot: { url: string }) => ({
+              uri: `https:${shot.url.replace("t_thumb", "t_screenshot_big")}`,
+            }))}
+            imageIndex={selectedImageIndex}
+            visible={true}
+            onRequestClose={() => setSelectedImageIndex(null)}
+            animationType="fade"
+          />
+        </View>
+      )}
     </View>
   );
 }
