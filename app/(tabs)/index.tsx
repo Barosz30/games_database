@@ -13,11 +13,19 @@ import {
 } from "react-native";
 import useIGDB from "../hooks/useIGDB";
 import useFetch from "../hooks/useFetch";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import GameCard from "@/components/GameCard";
+import GameFilters from "@/components/Filters";
 
 export default function Index() {
   const router = useRouter();
+  const [selectedFilters, setSelectedFilters] = useState<{
+    genres: string[];
+    platforms: string[];
+  }>({
+    genres: [],
+    platforms: [],
+  });
 
   const { fetchGames, isReady } = useIGDB();
 
@@ -52,7 +60,18 @@ export default function Index() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ minHeight: "100%", paddingBottom: 10 }}
       >
-        <Image source={icons.logo} className="w-12 h-10 mt-20 mb-5 mx-auto" />
+        <View className="flex-row items-center justify-between relative">
+          <View className="flex-1 mt-20">
+            <GameFilters onFilterChange={setSelectedFilters} />
+          </View>
+          <View className="flex-1">
+            <Image
+              source={icons.logo}
+              className="w-12 h-10 mt-20 mb-5 mx-auto"
+            />
+          </View>
+          <View className="flex-1" />
+        </View>
         {loading ? (
           <ActivityIndicator
             size="small"
@@ -73,7 +92,11 @@ export default function Index() {
               </Text>
               <FlatList
                 data={data}
-                renderItem={({ item }) => <GameCard {...item} />}
+                renderItem={({ item }) => (
+                  <View style={{ width: "45%", gap: 8 }}>
+                    <GameCard {...item} />
+                  </View>
+                )}
                 keyExtractor={(item) => item.id}
                 numColumns={2}
                 columnWrapperStyle={{
@@ -92,3 +115,7 @@ export default function Index() {
     </View>
   );
 }
+
+export const options = {
+  headerShown: false,
+};

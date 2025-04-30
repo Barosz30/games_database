@@ -17,6 +17,7 @@ import { WebView } from "react-native-webview";
 import { useState } from "react";
 import { Pressable } from "react-native";
 import ImageViewing from "react-native-image-viewing";
+import GameCard from "@/components/GameCard";
 
 interface GameInfoProps {
   label: string;
@@ -271,6 +272,33 @@ export function GameDetails() {
                       </View>
                     )
                   )}
+                </ScrollView>
+              </View>
+            )}
+            {game.similar_games && game.similar_games.length > 0 && (
+              <View className="mt-10 min-h-72">
+                <Text className="text-white font-bold text-lg mb-3">
+                  Similar Games
+                </Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{
+                    paddingRight: 16,
+                    gap: 10,
+                  }}
+                >
+                  {game.similar_games.map((similar: any) => (
+                    <View
+                      key={similar.id}
+                      style={{
+                        width: 180,
+                        height: 180,
+                      }}
+                    >
+                      <GameCard {...similar} />
+                    </View>
+                  ))}
                 </ScrollView>
               </View>
             )}

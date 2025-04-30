@@ -68,7 +68,11 @@ export default function Favorites() {
           ) : (
             <FlatList
               data={data}
-              renderItem={({ item }) => <GameCard {...item} />}
+              renderItem={({ item }) => (
+                <View style={{ width: "45%", gap: 8 }}>
+                  <GameCard {...item} />
+                </View>
+              )}
               keyExtractor={(item) => item.id.toString()}
               numColumns={2}
               columnWrapperStyle={{

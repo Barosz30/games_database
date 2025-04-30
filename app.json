@@ -15,6 +15,11 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/logo.png",
         "backgroundColor": "#ffffff"
+      },
+      "statusBar": {
+        "hidden": true,
+        "translucent": true,
+        "backgroundColor": "#00000000"
       }
     },
     "web": {

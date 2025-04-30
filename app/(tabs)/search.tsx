@@ -55,7 +55,11 @@ const Search = () => {
       <FlatList
         data={data}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <GameCard {...item} />}
+        renderItem={({ item }) => (
+          <View style={{ width: "45%", gap: 8 }}>
+            <GameCard {...item} />
+          </View>
+        )}
         numColumns={2}
         columnWrapperStyle={{
           justifyContent: "flex-start",

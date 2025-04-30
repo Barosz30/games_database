@@ -29,7 +29,7 @@ const GameCard = ({
     <Link href={`/games/${id}`} asChild>
       <TouchableOpacity
         style={{
-          width: "45%",
+          width: "100%",
           aspectRatio: 2 / 3,
           marginBottom: 20,
         }}
