@@ -9,35 +9,30 @@ import {
 import { useState } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import { useGameMeta } from "@/app/context/gameMetaContext";
+import { useFilters } from "@/app/context/filtersContext"; // import context here
 
-type GameFiltersProps = {
-  onFilterChange: (filters: { genres: string[]; platforms: string[] }) => void;
-};
-
-const GameFilters = ({ onFilterChange }: GameFiltersProps) => {
+const GameFilters = () => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
-  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const {
     genres: availableGenres,
     platforms: availablePlatforms,
     loading,
   } = useGameMeta();
 
-  const toggleGenre = (genre: string) => {
-    const updated = selectedGenres.includes(genre)
-      ? selectedGenres.filter((g) => g !== genre)
-      : [...selectedGenres, genre];
-    setSelectedGenres(updated);
-    onFilterChange({ genres: updated, platforms: selectedPlatforms });
+  const { selectedFilters, setSelectedFilters } = useFilters(); // use global context
+
+  const toggleGenre = (id: number) => {
+    const updated = selectedFilters.genres.includes(id)
+      ? selectedFilters.genres.filter((g) => g !== id)
+      : [...selectedFilters.genres, id];
+    setSelectedFilters({ ...selectedFilters, genres: updated });
   };
 
-  const togglePlatform = (platform: string) => {
-    const updated = selectedPlatforms.includes(platform)
-      ? selectedPlatforms.filter((p) => p !== platform)
-      : [...selectedPlatforms, platform];
-    setSelectedPlatforms(updated);
-    onFilterChange({ genres: selectedGenres, platforms: updated });
+  const togglePlatform = (id: number) => {
+    const updated = selectedFilters.platforms.includes(id)
+      ? selectedFilters.platforms.filter((p) => p !== id)
+      : [...selectedFilters.platforms, id];
+    setSelectedFilters({ ...selectedFilters, platforms: updated });
   };
 
   return (
@@ -56,7 +51,6 @@ const GameFilters = ({ onFilterChange }: GameFiltersProps) => {
             className="absolute inset-0"
             onPress={() => setModalVisible(false)}
           />
-
           <View
             className="bg-gray-900 p-5 rounded-t-2xl"
             style={{ maxHeight: "85%" }}
@@ -76,17 +70,17 @@ const GameFilters = ({ onFilterChange }: GameFiltersProps) => {
                   <View className="flex-row flex-wrap gap-2">
                     {availableGenres.map((genre) => (
                       <TouchableOpacity
-                        key={genre}
-                        onPress={() => toggleGenre(genre)}
+                        key={genre.id}
+                        onPress={() => toggleGenre(genre.id)}
                       >
                         <Text
                           className={`px-3 py-1 rounded-full ${
-                            selectedGenres.includes(genre)
+                            selectedFilters.genres.includes(genre.id)
                               ? "bg-accent text-white"
                               : "bg-gray-700 text-light-200"
                           }`}
                         >
-                          {genre}
+                          {genre.name}
                         </Text>
                       </TouchableOpacity>
                     ))}
@@ -103,17 +97,17 @@ const GameFilters = ({ onFilterChange }: GameFiltersProps) => {
                   <View className="flex-row flex-wrap gap-2">
                     {availablePlatforms.map((platform) => (
                       <TouchableOpacity
-                        key={platform}
-                        onPress={() => togglePlatform(platform)}
+                        key={platform.id}
+                        onPress={() => togglePlatform(platform.id)}
                       >
                         <Text
                           className={`px-3 py-1 rounded-full ${
-                            selectedPlatforms.includes(platform)
+                            selectedFilters.platforms.includes(platform.id)
                               ? "bg-accent text-white"
                               : "bg-gray-700 text-light-200"
                           }`}
                         >
-                          {platform}
+                          {platform.name}
                         </Text>
                       </TouchableOpacity>
                     ))}

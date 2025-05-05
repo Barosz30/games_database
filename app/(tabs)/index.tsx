@@ -16,37 +16,42 @@ import useFetch from "../hooks/useFetch";
 import { useEffect, useState } from "react";
 import GameCard from "@/components/GameCard";
 import GameFilters from "@/components/Filters";
+import { useFilters } from "../context/filtersContext";
 
 export default function Index() {
   const router = useRouter();
-  const [selectedFilters, setSelectedFilters] = useState<{
-    genres: string[];
-    platforms: string[];
-  }>({
-    genres: [],
-    platforms: [],
-  });
+  const { selectedFilters } = useFilters();
 
   const { fetchGames, isReady } = useIGDB();
 
-  const now = Math.floor(Date.now() / 1000);
-  const query = `
-    fields name, first_release_date, cover.url, total_rating;
-    where first_release_date != null & first_release_date <= ${now};
-    sort first_release_date desc;
-    limit 20;
-  `;
+  const fetchFunction = () => {
+    const genreFilter =
+      selectedFilters.genres.length > 0
+        ? ` & genres = (${selectedFilters.genres.join(",")})`
+        : "";
 
-  const { data, loading, error, refetch } = useFetch(
-    () => fetchGames(query),
-    false
-  );
+    const platformFilter =
+      selectedFilters.platforms.length > 0
+        ? ` & platforms = (${selectedFilters.platforms.join(",")})`
+        : "";
+
+    const now = Math.floor(Date.now() / 1000);
+
+    return fetchGames(`
+      fields name, first_release_date, cover.url, total_rating;
+      where first_release_date != null & first_release_date <= ${now}${genreFilter}${platformFilter};
+      sort first_release_date desc;
+      limit 20;
+    `);
+  };
+
+  const { data, loading, error, refetch } = useFetch(fetchFunction, false);
 
   useEffect(() => {
     if (isReady) {
       refetch();
     }
-  }, [isReady]);
+  }, [isReady, selectedFilters]);
 
   return (
     <View className="flex-1 bg-primary">
@@ -62,7 +67,7 @@ export default function Index() {
       >
         <View className="flex-row items-center justify-between relative">
           <View className="flex-1 mt-20">
-            <GameFilters onFilterChange={setSelectedFilters} />
+            <GameFilters />
           </View>
           <View className="flex-1">
             <Image

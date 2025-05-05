@@ -1,9 +1,12 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import useIGDB from "@/app/hooks/useIGDB";
 
+type Genre = { id: number; name: string };
+type Platform = { id: number; name: string };
+
 type GameMetaContextType = {
-  genres: string[];
-  platforms: string[];
+  genres: Genre[];
+  platforms: Platform[];
   loading: boolean;
 };
 
@@ -19,8 +22,8 @@ export const GameMetaProvider = ({
   children: React.ReactNode;
 }) => {
   const { fetchGames, isReady } = useIGDB();
-  const [genres, setGenres] = useState<string[]>([]);
-  const [platforms, setPlatforms] = useState<string[]>([]);
+  const [genres, setGenres] = useState<Genre[]>([]);
+  const [platforms, setPlatforms] = useState<Platform[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,13 +32,18 @@ export const GameMetaProvider = ({
     const fetchMeta = async () => {
       try {
         const genreQuery = `fields name; sort name asc; limit 100;`;
-        const platformQuery = `fields name; sort name asc; limit 100;`;
+        const platformQuery = `
+          fields name, category;
+          where category = (1, 4);
+          sort name asc;
+          limit 100;
+        `;
         const [genreData, platformData] = await Promise.all([
           fetchGames(genreQuery, "genres"),
           fetchGames(platformQuery, "platforms"),
         ]);
-        setGenres(genreData.map((g: any) => g.name));
-        setPlatforms(platformData.map((p: any) => p.name));
+        setGenres(genreData);
+        setPlatforms(platformData);
       } catch (err) {
         console.error("Failed to fetch genres/platforms", err);
       } finally {
@@ -54,3 +62,5 @@ export const GameMetaProvider = ({
 };
 
 export const useGameMeta = () => useContext(GameMetaContext);
+
+export default GameMetaProvider;
