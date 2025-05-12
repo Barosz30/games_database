@@ -123,16 +123,18 @@ export function GameDetails() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View>
           {game.cover?.url && (
-            <Image
-              source={{
-                uri: `https:${game.cover.url.replace(
-                  "t_thumb",
-                  "t_cover_big"
-                )}`,
-              }}
-              style={styles.coverImage}
-              resizeMode="stretch"
-            />
+            <View style={styles.container}>
+              <Image
+                source={{
+                  uri: `https:${game.cover?.url.replace(
+                    "t_thumb",
+                    "t_cover_big_2x"
+                  )}`,
+                }}
+                style={styles.coverImage}
+                resizeMode="stretch"
+              />
+            </View>
           )}
           <TouchableOpacity
             onPress={toggleFavorite}
